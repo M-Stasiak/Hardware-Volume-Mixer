@@ -3,6 +3,7 @@
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
 #include <audiopolicy.h>
+#include <string>
 
 class AudioController
 {
@@ -18,5 +19,6 @@ public:
 
 	void SetMasterVolume(float level);
 	float GetMasterVolume();
-	//void SetAppVolume();
+	void SetAppVolume(const std::wstring& targetProcessName, float level);
+	float GetAppVolume(const std::wstring& targetProcessName);
 };
