@@ -1,5 +1,5 @@
 #include "AudioController/AudioController.h"
-#include "SerialPort/SerialPort.h"
+#include "MCUDevice/MCUDevice.h"
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -40,35 +40,20 @@ int main()
 	*/
 
 	AudioController audioController;
-	SerialPort port;
-	if (!port.open(L"COM3")) return -1;
+	MCUDevice device;
+	vector<int> volumes;
+	if (!device.connect(L"COM3")) return -1;
 
 	while (true) {
-		std::string line;
-		cout << port.isOpen() << " - ";
-		if (port.readLine(line)) {
-			vector<int> values;
-			stringstream ss(line);
-			string item;
-
-			while (getline(ss, item, '|')) {
-				if (item.empty()) continue;
-
-				try {
-					int value = stoi(item);
-					values.push_back(value);
-				}
-				catch (const invalid_argument&) {
-					values.push_back(0);
-				}
-				catch (const out_of_range&) {
-					values.push_back(0);
-				}
-			}
-			for (size_t i = 0; i < values.size(); i++) cout << "A" << i << " = " << values[i] << "\t";
-			audioController.SetMasterVolume(values.front() / 100.0f);
+		device.readDataLine();
+		volumes = device.getVolumeValues();
+		for (auto i : volumes) {
+			cout << i << " ";
 		}
 		cout << endl;
+
+		Sleep(2000);
+
 	}
 
 	return 0;
